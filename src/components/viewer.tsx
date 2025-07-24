@@ -374,8 +374,12 @@ export const Viewer = ({
 									Object Information
 								</Text>
 
-								<ActionIcon size="sm" variant="default">
-									<IconX onClick={() => setHidePane(true)} size={16} />
+								<ActionIcon
+									onClick={() => setHidePane(true)}
+									size="sm"
+									variant="default"
+								>
+									<IconX size={16} />
 								</ActionIcon>
 							</Flex>
 
