@@ -2,7 +2,6 @@ import { Box, MantineProvider } from "@mantine/core";
 import { Viewer } from "./components/viewer";
 import "@mantine/core/styles.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 
 export type AppProps = {
 	host: string;
@@ -15,7 +14,6 @@ export function App(props: AppProps) {
 	return (
 		<MantineProvider>
 			<QueryClientProvider client={queryClient}>
-				<ReactQueryDevtools initialIsOpen={false} />
 				<Box>
 					<Viewer host={props.host} root_node={props.root_node} />
 				</Box>
