@@ -309,8 +309,14 @@ export const Viewer = ({
 				</Card>
 			</Box>
 
-			<Box style={{ bottom: 20, right: 20, top: 20, zIndex: 5 }} pos="absolute">
-				<Collapse in={!hidePane} h="100%" w="500px">
+			{!hidePane && (
+				<Collapse
+					in={!hidePane}
+					h="540px"
+					w="500px"
+					style={{ bottom: 20, right: 20, top: 20, zIndex: 5 }}
+					pos="absolute"
+				>
 					<Card withBorder h="100%">
 						<Flex justify={"space-between"} mb="xs">
 							<Text mb="sm" c="gray.9" fw={500} fz="xs" tt="uppercase">
@@ -331,38 +337,9 @@ export const Viewer = ({
 						</Flex>
 
 						{objectView === "table" && (
-							// <DataTable
-							// 	noRecordsText="Object has no properties"
-							// 	withTableBorder
-							// 	borderRadius="sm"
-							// 	withColumnBorders
-							// 	striped
-							// 	highlightOnHover
-							// 	idAccessor={(row) => row.label}
-							// 	records={Object.entries(selectedNode?.info || {}).map(
-							// 		([key, value]) => ({
-							// 			label: key,
-							// 			value:
-							// 				typeof value === "string" || typeof value === "number"
-							// 					? value
-							// 					: JSON.stringify(value, null, "\t"),
-							// 		}),
-							// 	)}
-							// 	columns={[
-							// 		{
-							// 			accessor: "label",
-							// 			title: "Property",
-							// 		},
-							// 		{
-							// 			accessor: "value",
-							// 			title: "Value",
-							// 		},
-							// 	]}
-							// />
-							//
 							<Table.ScrollContainer
 								minWidth={500}
-								maxHeight={"60%"}
+								maxHeight={500}
 								scrollAreaProps={{
 									offsetScrollbars: true,
 									scrollbarSize: 1,
@@ -430,7 +407,7 @@ export const Viewer = ({
 						)}
 					</Card>
 				</Collapse>
-			</Box>
+			)}
 
 			<div
 				id="graph"
@@ -439,6 +416,7 @@ export const Viewer = ({
 					height: "100vh",
 					backgroundImage: "radial-gradient(#e1e1e1 1px, #635c5c00 1px)",
 					backgroundSize: "16px 16px",
+					outline: "none",
 				}}
 				ref={graphRef}
 			/>
