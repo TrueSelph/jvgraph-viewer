@@ -1,11 +1,11 @@
 import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import { useEffect, useRef, useState } from "react";
+import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import {
 	Box,
 	Card,
 	Text,
-	Collapse,
 	JsonInput,
 	Select,
 	Flex,
@@ -233,9 +233,9 @@ export const Viewer = ({
 	}, [network, traversalMode]);
 
 	return (
-		<Box pos="relative">
+		<Box>
 			{/* {rootId} */}
-			<Box style={{ top: 20, left: 20, zIndex: 5 }} pos="absolute">
+			<Box style={{ top: 8, left: 8, zIndex: 5 }} pos="absolute">
 				<Card withBorder w="300px" p="xs">
 					<Flex justify="center" mb="lg">
 						<Flex gap="xs" align="center">
@@ -308,118 +308,115 @@ export const Viewer = ({
 					</Stack>
 				</Card>
 			</Box>
+			<PanelGroup autoSaveId="jvgraph" direction="horizontal">
+				<Panel defaultSize={75} id="graph">
+					<div
+						id="graph"
+						style={{
+							width: "100%",
+							height: "100vh",
+							backgroundImage: "radial-gradient(#e1e1e1 1px, #635c5c00 1px)",
+							backgroundSize: "16px 16px",
+							outline: "none",
+						}}
+						ref={graphRef}
+					/>
+				</Panel>
+				<PanelResizeHandle />
+				{!hidePane && (
+					<Panel id="sidebar">
+						<Card withBorder h="100%" w="100%">
+							<Flex justify={"space-between"} mb="xs">
+								<Text mb="sm" c="gray.9" fw={500} fz="xs" tt="uppercase">
+									Object Information
+								</Text>
 
-			{!hidePane && (
-				<Collapse
-					in={!hidePane}
-					h="540px"
-					w="500px"
-					style={{ bottom: 20, right: 20, top: 20, zIndex: 5 }}
-					pos="absolute"
-				>
-					<Card withBorder h="100%">
-						<Flex justify={"space-between"} mb="xs">
-							<Text mb="sm" c="gray.9" fw={500} fz="xs" tt="uppercase">
-								Object Information
-							</Text>
+								<SegmentedControl
+									data={[
+										{ label: "JSON", value: "json" },
+										{ label: "Table", value: "table" },
+									]}
+									defaultValue={objectView}
+									size="xs"
+									onChange={(value) => {
+										setObjectView(value.toLowerCase() as typeof objectView);
+									}}
+								/>
+							</Flex>
 
-							<SegmentedControl
-								data={[
-									{ label: "JSON", value: "json" },
-									{ label: "Table", value: "table" },
-								]}
-								defaultValue={objectView}
-								size="xs"
-								onChange={(value) => {
-									setObjectView(value.toLowerCase() as typeof objectView);
-								}}
-							/>
-						</Flex>
-
-						{objectView === "table" && (
-							<Table.ScrollContainer
-								minWidth={500}
-								maxHeight={500}
-								scrollAreaProps={{
-									offsetScrollbars: true,
-									scrollbarSize: 1,
-									overscrollBehavior: "auto",
-								}}
-							>
-								<Table
-									stickyHeader
-									variant="vertical"
-									layout="fixed"
-									// withTableBorder
-									withColumnBorders
-									striped
+							{objectView === "table" && (
+								<Table.ScrollContainer
+									minWidth={500}
+									maxHeight={500}
+									scrollAreaProps={{
+										offsetScrollbars: true,
+										scrollbarSize: 1,
+										overscrollBehavior: "auto",
+									}}
 								>
-									<Table.Tbody>
-										{selectedNode?.info &&
-											Object.entries(selectedNode?.info || {})
-												.sort((a, b) => a[0].localeCompare(b[0]))
-												.map(([key, value]) => (
-													<Table.Tr key={key}>
-														<Table.Th
-															w={160}
-															style={{ position: "sticky", left: 0 }}
-														>
-															{key}
-														</Table.Th>
-														<Table.Td>
-															{typeof value === "string" ||
-															typeof value === "number"
-																? value
-																: JSON.stringify(value, null, 2)}
-														</Table.Td>
-													</Table.Tr>
-												))}
-										{selectedEdge?.info &&
-											Object.entries(selectedEdge?.info || {}).map(
-												([key, value]) => (
-													<Table.Tr key={key}>
-														<Table.Th w={160}>{key}</Table.Th>
-														<Table.Td>
-															{typeof value === "string" ||
-															typeof value === "number"
-																? value
-																: JSON.stringify(value, null, 2)}
-														</Table.Td>
-													</Table.Tr>
-												),
-											)}
-									</Table.Tbody>
-								</Table>
-							</Table.ScrollContainer>
-						)}
+									<Table
+										stickyHeader
+										variant="vertical"
+										layout="fixed"
+										// withTableBorder
+										withColumnBorders
+										striped
+									>
+										<Table.Tbody>
+											{selectedNode?.info &&
+												Object.entries(selectedNode?.info || {})
+													.sort((a, b) => a[0].localeCompare(b[0]))
+													.map(([key, value]) => (
+														<Table.Tr key={key}>
+															<Table.Th
+																w={160}
+																style={{ position: "sticky", left: 0 }}
+															>
+																{key}
+															</Table.Th>
+															<Table.Td>
+																{typeof value === "string" ||
+																typeof value === "number"
+																	? value
+																	: JSON.stringify(value, null, 2)}
+															</Table.Td>
+														</Table.Tr>
+													))}
+											{selectedEdge?.info &&
+												Object.entries(selectedEdge?.info || {}).map(
+													([key, value]) => (
+														<Table.Tr key={key}>
+															<Table.Th w={160}>{key}</Table.Th>
+															<Table.Td>
+																{typeof value === "string" ||
+																typeof value === "number"
+																	? value
+																	: JSON.stringify(value, null, 2)}
+															</Table.Td>
+														</Table.Tr>
+													),
+												)}
+										</Table.Tbody>
+									</Table>
+								</Table.ScrollContainer>
+							)}
 
-						{objectView === "json" && (
-							<JsonInput
-								rows={20}
-								minRows={7}
-								value={JSON.stringify(
-									selectedNode?.info || selectedEdge?.info,
-									null,
-									2,
-								)}
-								variant="filled"
-							/>
-						)}
-					</Card>
-				</Collapse>
-			)}
-
-			<div
-				id="graph"
-				style={{
-					width: "100%",
-					height: "100vh",
-					backgroundImage: "radial-gradient(#e1e1e1 1px, #635c5c00 1px)",
-					backgroundSize: "16px 16px",
-					outline: "none",
-				}}
-				ref={graphRef}
-			/>
+							{objectView === "json" && (
+								<JsonInput
+									rows={20}
+									minRows={7}
+									value={JSON.stringify(
+										selectedNode?.info || selectedEdge?.info,
+										null,
+										2,
+									)}
+									variant="filled"
+								/>
+							)}
+						</Card>
+					</Panel>
+				)}
+			</PanelGroup>
 		</Box>
 	);
 };
