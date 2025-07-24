@@ -19,9 +19,11 @@ import {
 	rem,
 	SegmentedControl,
 	Table,
+	ActionIcon,
+	Tooltip,
 } from "@mantine/core";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { IconRefreshDot } from "@tabler/icons-react";
+import { IconLayoutSidebar, IconRefreshDot, IconX } from "@tabler/icons-react";
 
 type NodeData = {
 	id: string;
@@ -202,6 +204,29 @@ export const Viewer = ({
 	useEffect(() => {
 		if (!network) return;
 
+		network.on("oncontext", (info) => {
+			console.log({ info });
+			info.event.preventDefault();
+			const nodeId = network.getNodeAt(info.pointer.DOM);
+			const edgeId = network.getEdgeAt(info.pointer.DOM);
+
+			if (nodeId) {
+				const node = nodes.get(nodeId) as unknown as NodeData;
+				setHidePane(false);
+				setSelectedNode(node);
+				setSelectedEdge(null);
+				network.selectNodes([nodeId]);
+			} else if (!nodeId && edgeId) {
+				const edge = edges.get(edgeId) as unknown as EdgeData;
+				setHidePane(false);
+				setSelectedNode(null);
+				setSelectedEdge(edge);
+				network.selectEdges([nodeId]);
+			} else {
+				setSelectedNode(null);
+				setSelectedEdge(null);
+			}
+		});
 		network.on("click", (info) => {
 			setSelectedNodes(info.nodes);
 
@@ -209,16 +234,13 @@ export const Viewer = ({
 				const node = nodes.get(info.nodes[0]) as unknown as NodeData;
 				setSelectedEdge(null);
 				setSelectedNode(node);
-				setHidePane(false);
 			} else if (info.nodes.length === 0 && info.edges.length === 1) {
 				const edge = edges.get(info.edges[0]) as unknown as EdgeData;
 				setSelectedNode(null);
 				setSelectedEdge(edge);
-				setHidePane(false);
 			} else {
 				setSelectedEdge(null);
 				setSelectedNode(null);
-				setHidePane(true);
 			}
 		});
 
@@ -228,12 +250,33 @@ export const Viewer = ({
 				nodes.remove(nodes.map((node) => node.id).filter((id) => id !== node));
 			}
 
-			setLastNodeId(node);
+			if (node) {
+				setLastNodeId(node);
+			}
+
+			if (!info.nodes.length && !info.edges.length) {
+				setHidePane(true);
+			}
 		});
 	}, [network, traversalMode]);
 
 	return (
-		<Box>
+		<Box pos="relative">
+			<Tooltip label="Open Sidebar">
+				{hidePane && (
+					<ActionIcon
+						pos="absolute"
+						onClick={() => setHidePane(false)}
+						style={{ zIndex: 2 }}
+						variant="default"
+						color="gray"
+						top={8}
+						right={8}
+					>
+						<IconLayoutSidebar size={16} />
+					</ActionIcon>
+				)}
+			</Tooltip>
 			{/* {rootId} */}
 			<Box style={{ top: 8, left: 8, zIndex: 5 }} pos="absolute">
 				<Card withBorder w="300px" p="xs">
@@ -326,23 +369,27 @@ export const Viewer = ({
 				{!hidePane && (
 					<Panel id="sidebar">
 						<Card withBorder h="100%" w="100%">
-							<Flex justify={"space-between"} mb="xs">
-								<Text mb="sm" c="gray.9" fw={500} fz="xs" tt="uppercase">
+							<Flex justify={"space-between"} mb="xs" align="center">
+								<Text c="gray.9" fw={500} fz="xs" tt="uppercase">
 									Object Information
 								</Text>
 
-								<SegmentedControl
-									data={[
-										{ label: "JSON", value: "json" },
-										{ label: "Table", value: "table" },
-									]}
-									defaultValue={objectView}
-									size="xs"
-									onChange={(value) => {
-										setObjectView(value.toLowerCase() as typeof objectView);
-									}}
-								/>
+								<ActionIcon size="sm" variant="default">
+									<IconX onClick={() => setHidePane(true)} size={16} />
+								</ActionIcon>
 							</Flex>
+
+							<SegmentedControl
+								data={[
+									{ label: "JSON", value: "json" },
+									{ label: "Table", value: "table" },
+								]}
+								defaultValue={objectView}
+								size="xs"
+								onChange={(value) => {
+									setObjectView(value.toLowerCase() as typeof objectView);
+								}}
+							/>
 
 							{objectView === "table" && (
 								<Table.ScrollContainer
