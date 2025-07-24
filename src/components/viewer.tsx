@@ -10,7 +10,6 @@ import {
 	Select,
 	Flex,
 	Title,
-	Divider,
 	Stack,
 	Slider,
 	InputWrapper,
@@ -278,79 +277,9 @@ export const Viewer = ({
 				)}
 			</Tooltip>
 			{/* {rootId} */}
-			<Box style={{ top: 8, left: 8, zIndex: 5 }} pos="absolute">
-				<Card withBorder w="300px" p="xs">
-					<Flex justify="center" mb="lg">
-						<Flex gap="xs" align="center">
-							<Title order={5}>Jaseci Studio</Title>
-							{/* <MantineLogo type="mark" size={30} /> */}
-						</Flex>
-					</Flex>
-					<Divider py="xs" />
-					<Stack gap="xs" mb="lg">
-						<Select
-							size="xs"
-							label="Traversal Mode"
-							searchable
-							value={traversalMode}
-							data={["Full", "Step", "Focus"]}
-							onChange={(val) => {
-								setLastNodeId(rootId);
-								setRootId(rootId);
-								edges.clear();
-								nodes.clear();
+			{/* <Box style={{ top: 8, left: 8, zIndex: 5 }} pos="absolute"> */}
 
-								setTraversalMode(val as "Full" | "Step" | "Focus");
-							}}
-						/>
-
-						<InputWrapper label="Depth" size="xs">
-							<Slider
-								size="xs"
-								min={1}
-								max={10}
-								showLabelOnHover
-								value={traversalDepth}
-								onChange={(v) => setTraversalDepth(v)}
-								marks={[
-									{ value: 1, label: "1" },
-									{ value: 5, label: "5" },
-									{ value: 10, label: "10" },
-								]}
-							/>
-						</InputWrapper>
-
-						{(traversalMode === "Step" || traversalMode === "Focus") && (
-							<Group justify="end">
-								<Button
-									onClick={() => {
-										if (nodes.length === 1) return;
-										edges.clear();
-										nodes.clear();
-										setLastNodeId(rootId);
-										setRootId(rootId);
-										setTimeout(() => {
-											queryClient.refetchQueries();
-											setTraversalDepth(1);
-										}, 200);
-
-										network?.fit();
-									}}
-									leftSection={
-										<IconRefreshDot
-											style={{ width: rem(18), height: rem(18) }}
-										/>
-									}
-									mt="xl"
-									size="compact-xs"
-								>
-									Reset Graph
-								</Button>
-							</Group>
-						)}
-					</Stack>
-				</Card>
-			</Box>
+			{/* </Box> */}
 			<PanelGroup autoSaveId="jvgraph" direction="horizontal">
 				<Panel defaultSize={75} id="graph">
 					<div
@@ -369,11 +298,8 @@ export const Viewer = ({
 				{!hidePane && (
 					<Panel id="sidebar">
 						<Card withBorder h="100%" w="100%">
-							<Flex justify={"space-between"} mb="xs" align="center">
-								<Text c="gray.9" fw={500} fz="xs" tt="uppercase">
-									Object Information
-								</Text>
-
+							<Group justify="space-between" mb="xs">
+								<Title order={5}>JIVAS Graph</Title>
 								<ActionIcon
 									onClick={() => setHidePane(true)}
 									size="sm"
@@ -381,19 +307,93 @@ export const Viewer = ({
 								>
 									<IconX size={16} />
 								</ActionIcon>
-							</Flex>
+							</Group>
+							<Text c="gray.9" fw={500} fz="xs" tt="uppercase">
+								Controls
+							</Text>
 
-							<SegmentedControl
-								data={[
-									{ label: "JSON", value: "json" },
-									{ label: "Table", value: "table" },
-								]}
-								defaultValue={objectView}
-								size="xs"
-								onChange={(value) => {
-									setObjectView(value.toLowerCase() as typeof objectView);
-								}}
-							/>
+							<Box w="100%" p="xs">
+								<Stack gap="xs" mb="lg">
+									<Select
+										size="xs"
+										label="Traversal Mode"
+										searchable
+										value={traversalMode}
+										data={["Full", "Step", "Focus"]}
+										onChange={(val) => {
+											setLastNodeId(rootId);
+											setRootId(rootId);
+											edges.clear();
+											nodes.clear();
+
+											setTraversalMode(val as "Full" | "Step" | "Focus");
+										}}
+									/>
+
+									<InputWrapper label="Depth" size="xs">
+										<Slider
+											size="xs"
+											min={1}
+											max={10}
+											showLabelOnHover
+											value={traversalDepth}
+											onChange={(v) => setTraversalDepth(v)}
+											marks={[
+												{ value: 1, label: "1" },
+												{ value: 5, label: "5" },
+												{ value: 10, label: "10" },
+											]}
+										/>
+									</InputWrapper>
+
+									{(traversalMode === "Step" || traversalMode === "Focus") && (
+										<Group justify="end">
+											<Button
+												onClick={() => {
+													if (nodes.length === 1) return;
+													edges.clear();
+													nodes.clear();
+													setLastNodeId(rootId);
+													setRootId(rootId);
+													setTimeout(() => {
+														queryClient.refetchQueries();
+														setTraversalDepth(1);
+													}, 200);
+
+													network?.fit();
+												}}
+												leftSection={
+													<IconRefreshDot
+														style={{ width: rem(18), height: rem(18) }}
+													/>
+												}
+												mt="xl"
+												size="compact-xs"
+											>
+												Reset Graph
+											</Button>
+										</Group>
+									)}
+								</Stack>
+							</Box>
+
+							<Flex justify={"space-between"} mb="xs" align="center">
+								<Text c="gray.9" fw={500} fz="xs" tt="uppercase">
+									Object Information
+								</Text>
+
+								<SegmentedControl
+									data={[
+										{ label: "JSON", value: "json" },
+										{ label: "Table", value: "table" },
+									]}
+									defaultValue={objectView}
+									size="xs"
+									onChange={(value) => {
+										setObjectView(value.toLowerCase() as typeof objectView);
+									}}
+								/>
+							</Flex>
 
 							{objectView === "table" && (
 								<Table.ScrollContainer
