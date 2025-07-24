@@ -2,7 +2,6 @@ import { Network } from "vis-network";
 import { DataSet } from "vis-data";
 import { useEffect, useRef, useState } from "react";
 import {
-	Affix,
 	Box,
 	Card,
 	Text,
@@ -236,7 +235,7 @@ export const Viewer = ({
 	return (
 		<Box pos="relative">
 			{/* {rootId} */}
-			<Affix position={{ top: 20, left: 20 }}>
+			<Box style={{ top: 20, left: 20 }} pos="absolute">
 				<Card withBorder w="300px" p="xs">
 					<Flex justify="center" mb="lg">
 						<Flex gap="xs" align="center">
@@ -308,9 +307,9 @@ export const Viewer = ({
 						)}
 					</Stack>
 				</Card>
-			</Affix>
+			</Box>
 
-			<Affix position={{ bottom: 20, right: 20, top: 20 }}>
+			<Box style={{ bottom: 20, right: 20, top: 20 }} pos="absolute">
 				<Collapse in={!hidePane} h="100%" w="500px">
 					<Card withBorder h="100%">
 						<Flex justify={"space-between"} mb="xs">
@@ -431,7 +430,7 @@ export const Viewer = ({
 						)}
 					</Card>
 				</Collapse>
-			</Affix>
+			</Box>
 
 			<div
 				id="graph"
