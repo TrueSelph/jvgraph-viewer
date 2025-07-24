@@ -235,7 +235,7 @@ export const Viewer = ({
 	return (
 		<Box pos="relative">
 			{/* {rootId} */}
-			<Box style={{ top: 20, left: 20 }} pos="absolute">
+			<Box style={{ top: 20, left: 20, zIndex: 5 }} pos="absolute">
 				<Card withBorder w="300px" p="xs">
 					<Flex justify="center" mb="lg">
 						<Flex gap="xs" align="center">
@@ -309,7 +309,7 @@ export const Viewer = ({
 				</Card>
 			</Box>
 
-			<Box style={{ bottom: 20, right: 20, top: 20 }} pos="absolute">
+			<Box style={{ bottom: 20, right: 20, top: 20, zIndex: 5 }} pos="absolute">
 				<Collapse in={!hidePane} h="100%" w="500px">
 					<Card withBorder h="100%">
 						<Flex justify={"space-between"} mb="xs">
